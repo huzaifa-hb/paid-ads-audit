@@ -1,0 +1,8 @@
+.DS_Store
+Thumbs.db
+*.log
+# Outputs the skill writes while you use it
+brand-profile.json
+campaign-brief.md
+audit-report.json
+ad-assets/

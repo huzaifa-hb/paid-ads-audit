@@ -1,0 +1,6 @@
+interface:
+  display_name: "Paid Ads"
+  short_description: "Audit, optimize, create, and report on paid ads"
+  default_prompt: "Use $ads to analyze my paid advertising and produce an evidence-backed action plan."
+policy:
+  allow_implicit_invocation: true
