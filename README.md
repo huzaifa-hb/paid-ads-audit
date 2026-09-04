@@ -17,30 +17,85 @@ An AI skill that audits your ad accounts the way a senior media buyer would. It 
 
 Both files are plain zip archives. If a file picker refuses the `.skill` extension, rename it to `.zip` and try again.
 
-## What it does
+## Why this exists
 
-You paste an export, a screenshot, or a few numbers from Ads Manager. The skill asks for the context it needs (business type, spend, goal, platforms), then works through a checklist of over 250 items covering tracking, structure, bidding, budget, creative, landing pages, and compliance. You get:
+Ask a general chatbot to "look at my ads" and you get generic advice: refresh creative, add negatives, check your pixel. This skill replaces that with the actual working method of a senior media buyer, written down as a set of instructions the AI has to follow. It knows that Smart Bidding needs conversion volume before it is safe, that a Meta ad set with less than 5x CPA in daily budget will never leave learning, that a TikTok ad without sound is a wasted impression, and that a ROAS number means nothing until you know the attribution window behind it. It checks for those things, in order, and shows you the evidence.
 
-- A health score per platform, graded A to F, plus a spend-weighted account score.
-- Findings ranked Critical, High, Medium, Low, each with the evidence behind it.
-- A quick-wins list you can ship this week and a longer action plan with owner, impact, and effort.
-- Optional extras: a client-ready PDF report, a media plan by industry, budget forecasts, A/B test design, competitor research, and ad copy or image concepts.
+Everything the skill knows lives in plain text files you can read: over 30 reference documents covering audit checklists, platform benchmarks, bidding decision trees, tracking stacks, ad policies, creative specs, and copy frameworks. Nothing is hidden in a model's weights.
 
-If you connect a live ad platform (through an MCP server or a ChatGPT app), it pulls the data itself. If not, exports and screenshots work fine.
+## What a full audit gives you
 
-## What it covers
+1. It asks for the context that changes the answer: business type, monthly spend by platform, the goal, and your target CPA or ROAS. If you already gave it, it does not ask again.
+2. It reads whatever you give it: platform exports, screenshots, pasted numbers, or a live connection to the ad platform.
+3. It works through the platform checklists. Each check is graded pass, warning, fail, or not applicable, with a severity of Critical, High, Medium, or Low.
+4. It scores each platform 0 to 100 using a weighted formula: severity multipliers (Critical counts 5.0, High 3.0, Medium 1.5, Low 0.5) across category weights that differ per platform. On Google, conversion tracking is 25% of the score and wasted spend is 20%. On Meta, pixel and CAPI health is 30% and creative diversity and fatigue is another 30%. Checks that do not apply are excluded so a small account is not penalized for features it does not need.
+5. It rolls the platform scores into one account score weighted by spend share, graded A to F.
+6. It hands you three things: a quick-wins list for this week, a prioritized action plan where each item has an owner, expected impact, effort, the evidence behind it, and how to verify the fix worked, and a plain list of what it could not check and why.
 
-| Platform | Checks | Includes |
+In Claude Code the platform audits run in parallel as six separate agents (Google, Meta, creative, tracking, budget, compliance) and the results are validated before they are combined. In ChatGPT, Claude.ai, and Codex the same lanes run in sequence with the same output.
+
+## Platform coverage
+
+| Platform | Checks | What gets examined |
 |---|---|---|
-| Google Ads | 74 | Search terms and wasted spend, Quality Score, PMax asset groups, conversion tracking, Consent Mode V2, bidding fit for conversion volume |
-| Meta Ads | 46 | Pixel and CAPI health, EMQ, creative fatigue and diversity, audience overlap, Advantage+ setup, learning phase |
-| YouTube | included with Google | Skippable, bumper, Shorts, thumbnails, view-through attribution |
-| LinkedIn Ads | 25 | Insight Tag, lead gen forms, audience size, bid type, B2B benchmarks |
-| TikTok Ads | 25 | Pixel and Events API, sound-on creative, Smart+, Shop campaigns, budget floors |
-| Microsoft Ads | 20 | UET tag, Google import drift, Copilot placements |
-| Apple Ads | yes | Search tab, AdAttributionKit, keyword structure |
+| Google Ads | 80 | Enhanced Conversions, Consent Mode V2, conversion action hygiene, search terms and negative lists, brand and non-brand separation, Quality Score as a diagnostic, RSA strength, PMax asset groups and search categories, AI Max, Demand Gen, CTV tracking, location and network settings, bidding fit for conversion volume |
+| Meta Ads | 50 | Pixel and CAPI setup, Event Match Quality per event, deduplication, creative fatigue signals and refresh cadence, Andromeda creative similarity, Advantage+ Sales and Advantage+ Audience, learning phase status, CBO versus ABO, audience overlap and exclusions, Special Ad Categories |
+| YouTube | dedicated module | Skippable, non-skippable, bumper, Shorts, Demand Gen, and Connected TV, the VAC to Demand Gen migration, view-through attribution, thumbnail and hook quality |
+| LinkedIn Ads | 27 | Insight Tag and CAPI, audience size and precision, Thought Leader Ads, ABM and predictive audiences, lead gen form completion, manual versus automated bidding, CRM revenue attribution, EU messaging compliance |
+| TikTok Ads | 28 | Pixel and Events API Gateway, ttclid passback, sound and caption presence, safe zones, Spark Ads, Smart+ modular control, Search toggle, TikTok Shop, 50 conversions a week learning threshold |
+| Microsoft Ads | 24 | UET tag, Google import validation and sync drift, LinkedIn profile targeting, Copilot placements and Copilot Checkout, cost advantage versus Google |
+| Apple Ads | dedicated module | Campaign structure, Custom Product Pages, MMP attribution, AdAttributionKit, Today, Search, and Product Page tab coverage, Maximize Conversions, CPA benchmarks by country |
 
-Cross-platform lanes look at tracking, budget allocation, creative, and compliance together, so a Meta problem that is really a tracking problem shows up as one.
+Cross-platform checks sit on top of these. Tracking health, budget allocation, creative, and compliance are each assessed across every active platform together, so a Meta problem that is really a tracking problem gets reported once, as a tracking problem.
+
+## Beyond the audit
+
+The audit is one of 17 modes. Each is a separate instruction set the skill loads on demand.
+
+**Money**
+
+- Budget and bidding review applies the 70/20/10 allocation rule, the 3x kill rule, the 20% scaling rule, and per-platform bidding decision trees. It tells you what to kill, what to scale, and whether the account is ready to scale at all.
+- PPC math covers CPA, ROAS, CPL, break-even, impression share opportunity sizing, budget forecasting, LTV to CAC, and MER. It needs no data connection, just pasted numbers.
+- A/B test design gives you a structured hypothesis, a significance calculator, sample size and duration estimates, and setup instructions for Meta Experiments, Google Experiments, LinkedIn A/B, and TikTok split tests.
+
+**Strategy**
+
+- Media planning produces platform selection, campaign architecture, budget phasing, creative strategy, a tracking setup plan, and a phased roadmap. It ships with 12 industry templates: ecommerce, ecommerce creative, SaaS, B2B enterprise, local service, info products, mobile app, real estate, healthcare, finance, agency, and a generic fallback.
+- Competitor research works from ad libraries and auction insights to analyze competitor copy, creative strategy, messaging themes, keyword targeting, and estimated spend, then maps platform, messaging, audience, and creative gaps. It includes response playbooks for when a competitor bids on your brand and when you are outspent.
+
+**Post-click**
+
+- Landing page review scores message match, page speed against ad-traffic thresholds, mobile experience, trust signals, form length, consent banner impact, and UTM handling, with a health score and a quick-wins list.
+
+**Creative**
+
+- Creative audit assesses copy, video, image, and format diversity per platform, detects fatigue from frequency and CTR decay, and applies the Andromeda similarity score for Meta and Symphony awareness for TikTok.
+- Brand DNA extraction reads a website and writes a brand profile: colors, typography, tone of voice, imagery style, with confidence scores.
+- Campaign creation turns that profile plus audit results into campaign concepts, messaging pillars, and copy briefs, using six frameworks: AIDA, PAS, BAB, 4P, FAB, and Star-Story-Solution.
+- Image generation and product photoshoot produce platform-sized assets and five product photography styles (studio, floating, ingredient, in use, lifestyle) with safe-zone specs for Feed, Reels, Stories, Shorts, and TikTok.
+
+**Reporting**
+
+- Client report packages the audit as a PDF with an executive summary, scorecard, findings, action plan, limitations, and methodology, and runs a layout check before it hands it over.
+
+## Rules the skill will not break
+
+These are hard-coded gates, not suggestions. They exist because each one is a mistake that costs real money.
+
+- Never recommend Broad Match on Google without Smart Bidding in place.
+- Never recommend edits to a campaign that is still in the learning phase.
+- Flag any ad group or campaign with a CPA above 3x target for a pause decision.
+- Meta ad sets need at least 5x CPA in daily budget, TikTok ad groups at least 50x, before performance is judged.
+- Flag Meta accounts running fewer than 10 genuinely distinct creatives.
+- Verify the tracking stack (Consent Mode V2, CAPI, Events API, AdAttributionKit) before making any optimization recommendation.
+- Always check Special Ad Category status for housing, employment, credit, and finance advertisers.
+- Never substitute an adjacent date range, never sum daily reach and call it reach, never merge conversion numbers with different definitions without showing the reconciliation.
+
+Every number in the output is labelled as observed, calculated, estimated, benchmark-based, or missing. Benchmarks come from named 2025 and 2026 sources (WordStream and LocaliQ, Triple Whale, SplitMetrics) and are treated as direction, never as your target.
+
+## Built for DTC and ecommerce accounts
+
+A dedicated playbook covers the situations ecommerce buyers hit most: deriving break-even ROAS from real unit economics, a staged ROAS progression model for new accounts, learning phase budget math, isolating new-customer ROAS from blended, reading MER trend against platform ROAS trend, telling creative fatigue apart from audience saturation, a seven-step triage for sudden performance drops, Amazon and DTC cross-channel decisions including Brand Referral Bonus and price parity, and a three-numbers attribution framework you can explain to a CEO.
 
 ## Install in ChatGPT
 
