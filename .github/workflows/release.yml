@@ -1,0 +1,24 @@
+name: Build and publish skill files
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package both skills
+        run: ./scripts/package.sh
+      - name: Attach to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/paid-ads-audit-chatgpt.skill
+            build/paid-ads-audit-claude.skill
+          generate_release_notes: true

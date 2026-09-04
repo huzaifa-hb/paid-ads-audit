@@ -108,17 +108,19 @@ Benchmarks in the skill are directional. Your account is the source of truth, an
 ```
 chatgpt/ads/     Source for the ChatGPT and Codex version
 claude/ads/      Source for the Claude.ai and Claude Code version
-dist/            The two .skill files (same as the release assets)
 install.sh       One-line installer for Claude Code and Codex
-scripts/         Rebuilds dist/ from source
+scripts/         package.sh zips the two folders into .skill files
+.github/         Workflow that builds the .skill files and attaches them to each release
 docs/            Data checklist and example prompts
 ```
 
+The `.skill` downloads live on the [Releases page](https://github.com/huzaifa-hb/paid-ads-audit/releases). They are built from the source folders by the release workflow, so the source and the download never drift apart.
+
 The two versions share the same checklists, benchmarks, and scoring. They differ in how they talk to each platform's tooling, which is why there are two files instead of one.
 
-## Contributing
+## Feedback
 
-Corrections to benchmarks, new checks, or platform updates are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md). Bug reports and requests go in [Issues](https://github.com/huzaifa-hb/paid-ads-audit/issues).
+Found a check that misfires or a benchmark that is out of date? Open an [issue](https://github.com/huzaifa-hb/paid-ads-audit/issues) with the platform and what you expected. Pull requests are welcome; change both `claude/ads` and `chatgpt/ads` when the fix applies to both.
 
 ## License
 

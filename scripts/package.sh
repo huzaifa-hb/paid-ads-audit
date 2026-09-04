@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Rebuilds the two .skill files in dist/ from the source folders.
-# Run from the repo root: ./scripts/package.sh
+# Zips claude/ads and chatgpt/ads into .skill files under build/.
+# The release workflow runs this on every version tag; you can also run it
+# locally from the repo root to test an upload before tagging.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-mkdir -p dist
-rm -f dist/paid-ads-audit-claude.skill dist/paid-ads-audit-chatgpt.skill
-(cd claude  && zip -qr ../dist/paid-ads-audit-claude.skill  ads -x '*.DS_Store')
-(cd chatgpt && zip -qr ../dist/paid-ads-audit-chatgpt.skill ads -x '*.DS_Store')
-ls -la dist
+rm -rf build && mkdir -p build
+(cd claude  && zip -qr ../build/paid-ads-audit-claude.skill  ads -x '*.DS_Store')
+(cd chatgpt && zip -qr ../build/paid-ads-audit-chatgpt.skill ads -x '*.DS_Store')
+ls -la build
