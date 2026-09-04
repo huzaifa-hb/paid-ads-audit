@@ -8,7 +8,7 @@ license: MIT
 # Ads: Multi-Platform Paid Advertising Audit & Optimization
 
 Comprehensive ad account analysis across all major platforms (Google, Meta,
-LinkedIn, TikTok, Microsoft). Orchestrates 17 specialized sub-skills and
+LinkedIn, TikTok, Microsoft). Orchestrates 18 specialized sub-skills and
 10 agents (6 audit + 4 creative).
 
 ## Quick Reference
@@ -109,7 +109,7 @@ Hard rules (never violate these):
 - Attribution: default to 7-day click / 1-day view (Meta), data-driven (Google)
 - Andromeda creative diversity: Flag Meta accounts with <10 genuinely distinct creatives
 - Privacy infrastructure gate: Always verify tracking stack (Consent Mode V2, CAPI, Events API, AdAttributionKit) before making optimization recommendations
-- PDF report quality gate: When generating reports via `/ads report`, always use `scripts/generate_report.py` with `--check` first. Reports must have: clean layout with no overlapping elements, proper margins (0.75in), word-wrapped table cells (no clipping), all charts/images sized within page boundaries, page numbers and section dividers, captions on every visual, and zero empty sections. Run `--check` before `--output` and fix any warnings before delivering the PDF
+- PDF report quality gate: When generating reports via `/ads report`, follow `skills/ads-report/instructions.md`. Build `audit-report.json` per `references/data-contract.md`, validate it with `scripts/generate_report.py --input audit-report.json --check-input`, render with `--markdown` and `--output`, then run `--check-pdf` on the result. Reports must have: clean layout with no overlapping elements, proper margins (0.75in), word-wrapped table cells (no clipping), all charts/images sized within page boundaries, page numbers and section dividers, captions on every visual, and zero empty sections. Fix every warning before delivering the PDF, and never claim a PDF exists if it was not produced
 
 ## Reference Files
 
@@ -118,6 +118,7 @@ Load these on-demand as needed; do NOT load all at startup.
 **Path resolution (Claude web):** All reference files are at `references/` relative to the skill root. Sub-skill instructions are at `skills/<name>/instructions.md`.
 
 - `references/scoring-system.md`: Weighted scoring algorithm and grading thresholds
+- `references/data-contract.md`: `audit-report.json` schema used by `/ads report` and `scripts/generate_report.py`
 - `references/benchmarks.md`: Industry benchmarks by platform (CPC, CTR, CVR, ROAS)
 - `references/bidding-strategies.md`: Bidding decision trees per platform
 - `references/budget-allocation.md`: Platform selection matrix, scaling rules, MER
@@ -171,7 +172,7 @@ Aggregate = Sum(Platform_Score x Platform_Budget_Share)
 
 ## Sub-Skills
 
-This skill orchestrates 17 specialized sub-skills:
+This skill orchestrates 18 specialized sub-skills:
 
 1. **ads-audit**: Full multi-platform audit with parallel delegation
 2. **ads-google**: Google Ads deep analysis (Search, PMax, YouTube)
@@ -190,6 +191,7 @@ This skill orchestrates 17 specialized sub-skills:
 15. **ads-create**: Campaign concepts, copy decks, creative briefs
 16. **ads-generate**: AI image generation with pluggable providers
 17. **ads-photoshoot**: Product photography in 5 professional styles
+18. **ads-report**: Client-ready Markdown and PDF audit report from validated `audit-report.json`
 
 ## Subagents
 
